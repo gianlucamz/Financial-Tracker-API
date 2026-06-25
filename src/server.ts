@@ -1,6 +1,8 @@
 import 'dotenv/config';
 import express from 'express';
 import authRoutes from './modules/auth/auth.routes';
+import categoriesRoutes from './modules/categories/categories.routes';
+import { errorMiddleware } from './middlewares/error.middleware';
 
 const app = express();
 
@@ -11,6 +13,9 @@ app.get('/health', (_req, res) => {
 });
 
 app.use('/auth', authRoutes);
+app.use('/categories', categoriesRoutes);
+
+app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 3000;
 
