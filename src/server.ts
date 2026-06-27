@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import authRoutes from './modules/auth/auth.routes';
 import categoriesRoutes from './modules/categories/categories.routes';
+import transactionsRoutes from './modules/transactions/transactions.routes';
 import { errorMiddleware } from './middlewares/error.middleware';
 
 const app = express();
@@ -14,6 +15,7 @@ app.get('/health', (_req, res) => {
 
 app.use('/auth', authRoutes);
 app.use('/categories', categoriesRoutes);
+app.use('/transactions', transactionsRoutes);
 
 app.use(errorMiddleware);
 
