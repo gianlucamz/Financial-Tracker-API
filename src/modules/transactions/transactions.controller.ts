@@ -1,0 +1,87 @@
+import { Request, Response, NextFunction } from 'express';
+import { TransactionService } from './transactions.service';
+import {
+  createTransactionSchema,
+  updateTransactionSchema,
+  transactionParamsSchema,
+  transactionFiltersSchema,
+} from './transactions.dto';
+
+const transactionsService = new TransactionService();
+
+export class TransactionController {
+  async create(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const parsed = createTransactionSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({ error: parsed.error.issues[0].message });
+        return;
+      }
+      const transaction = await transactionsService.create(req.userId, parsed.data);
+      res.status(201).json(transaction);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async findAll(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const parsed = transactionFiltersSchema.safeParse(req.query);
+      if (!parsed.success) {
+        res.status(400).json({ error: parsed.error.issues[0].message });
+        return;
+      }
+      const transactions = await transactionsService.findAll(req.userId, parsed.data);
+      res.status(200).json(transactions);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async findById(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const params = transactionParamsSchema.safeParse(req.params);
+      if (!params.success) {
+        res.status(400).json({ error: params.error.issues[0].message });
+        return;
+      }
+      const transaction = await transactionsService.findById(req.userId, params.data.id);
+      res.status(200).json(transaction);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async update(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const params = transactionParamsSchema.safeParse(req.params);
+      if (!params.success) {
+        res.status(400).json({ error: params.error.issues[0].message });
+        return;
+      }
+      const parsed = updateTransactionSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({ error: parsed.error.issues[0].message });
+        return;
+      }
+      const transaction = await transactionsService.update(req.userId, params.data.id, parsed.data);
+      res.status(200).json(transaction);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const params = transactionParamsSchema.safeParse(req.params);
+      if (!params.success) {
+        res.status(400).json({ error: params.error.issues[0].message });
+        return;
+      }
+      await transactionsService.delete(req.userId, params.data.id);
+      res.status(204).send();
+    } catch (error) {
+      next(error);
+    }
+  }
+}
