@@ -5,10 +5,13 @@ import categoriesRoutes from './modules/categories/categories.routes';
 import transactionsRoutes from './modules/transactions/transactions.routes';
 import reportsRoutes from './modules/reports/reports.routes';
 import { errorMiddleware } from './middlewares/error.middleware';
+import { setupSwagger } from './config/swagger';
 
 const app = express();
 
 app.use(express.json());
+
+setupSwagger(app);
 
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', message: 'Financial Tracker API funcionando!' });
